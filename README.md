@@ -37,6 +37,10 @@ background.js  ──►  chrome.storage.local  ──►  abre gemini.google.co
 
 La extensión **no está publicada en la Chrome Web Store**, por lo que hay que instalarla en modo desarrollador. Sigue estos pasos:
 
+> ⚠️ **Importante — guarda la carpeta en una ubicación permanente**
+>
+> Chrome carga la extensión desde la carpeta que seleccionas en el momento de instalarla. Si esa carpeta se mueve, se renombra o se elimina (por ejemplo, si la dejaste en Descargas y Windows la borró), Chrome perderá la extensión la próxima vez que se reinicie y tendrás que volver a instalarla. Elige un directorio fijo donde la carpeta vaya a quedarse siempre (por ejemplo `C:\Users\TuUsuario\AppData\Roaming\chrome-extensions-local\youtube-gemini-summarizer`) y no la muevas después de instalarla.
+
 ### Paso 1 — Descarga los archivos
 
 Clona el repositorio o descárgalo como ZIP:
