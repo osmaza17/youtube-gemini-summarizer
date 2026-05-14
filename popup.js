@@ -16,7 +16,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   saveBtn.addEventListener('click', () => {
+    if (!textarea.value.includes('(detalles del video)')) {
+      status.style.color = '#e37400';
+      status.textContent = '⚠ Missing (detalles del video)';
+      setTimeout(() => { status.textContent = ''; }, 3000);
+      return;
+    }
     chrome.storage.sync.set({ customPrompt: textarea.value }, () => {
+      status.style.color = '#188038';
       status.textContent = '✓ Saved';
       setTimeout(() => { status.textContent = ''; }, 2000);
     });

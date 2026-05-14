@@ -5,8 +5,7 @@
   "description": "Añade un botón en YouTube para resumir el video con Gemini AI",
   "permissions": [
     "tabs",
-    "storage",
-    "activeTab"
+    "storage"
   ],
   "host_permissions": [
     "https://www.youtube.com/*",
