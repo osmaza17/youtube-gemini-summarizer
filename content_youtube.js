@@ -3,7 +3,7 @@
 const BUTTON_ID = 'gemini-summarize-btn';
 const HOVER_BTN_CLASS = 'gemini-hover-btn';
 
-const PROMPT = `Analiza el siguiente vídeo de YouTube y escribe un resumen estructurado en español.
+const DEFAULT_PROMPT = `Analiza el siguiente vídeo de YouTube y escribe un resumen estructurado en español.
 El resumen debe organizarse en secciones y subsecciones que sigan el orden cronológico del vídeo.
  Sin bullet points. Sin timestamps. Secciones separadas en párrafos para facilitar la lectura.
 El objetivo es que quien lea el resumen entienda con precisión qué se dice en el video, con el mismo nivel de detalle, sin necesidad de verlo.
@@ -15,13 +15,13 @@ const GEMINI_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="1
   <path d="M2 14C2 14 10 12.5 14 8C18 12.5 26 14 26 14C26 14 18 15.5 14 20C10 15.5 2 14 2 14Z" fill="currentColor"/>
 </svg>`;
 
-function buildPromptText({ url, title, channel }) {
+function buildPromptText({ url, title, channel }, prompt) {
   const videoInfo = [
     title   ? `Título: ${title}`  : null,
     channel ? `Canal: ${channel}` : null,
     `URL: ${url}`,
   ].filter(Boolean).join('\n');
-  return PROMPT.replace('(detalles del video)', videoInfo);
+  return prompt.replace('(detalles del video)', videoInfo);
 }
 
 function sendToGemini(info, btn, labelEl) {
@@ -29,19 +29,22 @@ function sendToGemini(info, btn, labelEl) {
   btn.style.opacity = '0.5';
   if (labelEl) labelEl.textContent = '…';
 
-  chrome.runtime.sendMessage(
-    { action: 'openGeminiWithText', text: buildPromptText(info) },
-    () => {
-      if (labelEl) { labelEl.textContent = '✓ Listo'; }
-      else { btn.innerHTML = `<span style="font-size:10px;color:#fff;line-height:1">✓</span>`; }
-      setTimeout(() => {
-        btn.disabled = false;
-        btn.style.opacity = '1';
-        if (labelEl) labelEl.textContent = 'Resumen';
-        else btn.innerHTML = GEMINI_SVG;
-      }, 2500);
-    }
-  );
+  chrome.storage.sync.get(['customPrompt'], (result) => {
+    const prompt = result.customPrompt !== undefined ? result.customPrompt : DEFAULT_PROMPT;
+    chrome.runtime.sendMessage(
+      { action: 'openGeminiWithText', text: buildPromptText(info, prompt) },
+      () => {
+        if (labelEl) { labelEl.textContent = '✓ Listo'; }
+        else { btn.innerHTML = `<span style="font-size:10px;color:#fff;line-height:1">✓</span>`; }
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          if (labelEl) labelEl.textContent = 'Resumen';
+          else btn.innerHTML = GEMINI_SVG;
+        }, 2500);
+      }
+    );
+  });
 }
 
 // ══════════════════════════════════════════════════════════════════════════════

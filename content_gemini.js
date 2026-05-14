@@ -44,38 +44,51 @@ function findSendButton() {
 
 function injectTextAndSend(editor, text) {
   editor.focus();
-  const selection = window.getSelection();
+  const sel = window.getSelection();
   const range = document.createRange();
   range.selectNodeContents(editor);
-  selection.removeAllRanges();
-  selection.addRange(range);
+  sel.removeAllRanges();
+  sel.addRange(range);
 
-  const inserted = document.execCommand('insertText', false, text);
-  if (!inserted) {
-    editor.textContent = text;
-    editor.dispatchEvent(new InputEvent('input', {
-      bubbles: true, cancelable: true, inputType: 'insertText', data: text,
-    }));
-  }
-  editor.dispatchEvent(new Event('input', { bubbles: true }));
-  editor.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
+  // Inject via ClipboardEvent paste — avoids deprecated execCommand
+  const dt = new DataTransfer();
+  dt.setData('text/plain', text);
+  editor.dispatchEvent(new ClipboardEvent('paste', {
+    bubbles: true, cancelable: true, clipboardData: dt,
+  }));
 
   setTimeout(() => {
-    const sendBtn = findSendButton();
-    if (sendBtn && !sendBtn.disabled) { sendBtn.click(); return; }
+    // Fallback: direct DOM insertion if the editor ignored the paste event
+    if (!editor.textContent.trim()) {
+      const r = document.createRange();
+      r.selectNodeContents(editor);
+      r.deleteContents();
+      r.insertNode(document.createTextNode(text));
+      editor.dispatchEvent(new InputEvent('input', {
+        bubbles: true, cancelable: true, inputType: 'insertText', data: text,
+      }));
+    }
 
-    editor.dispatchEvent(new KeyboardEvent('keydown', {
-      bubbles: true, cancelable: true, key: 'Enter', code: 'Enter', keyCode: 13,
-    }));
-    editor.dispatchEvent(new KeyboardEvent('keyup', {
-      bubbles: true, cancelable: true, key: 'Enter', code: 'Enter', keyCode: 13,
-    }));
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
+    editor.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
 
     setTimeout(() => {
-      const sendBtn2 = findSendButton();
-      if (sendBtn2) sendBtn2.click();
-    }, 500);
-  }, 800);
+      const sendBtn = findSendButton();
+      if (sendBtn && !sendBtn.disabled) { sendBtn.click(); return; }
+
+      editor.dispatchEvent(new KeyboardEvent('keydown', {
+        bubbles: true, cancelable: true, key: 'Enter', code: 'Enter', keyCode: 13,
+      }));
+      editor.dispatchEvent(new KeyboardEvent('keyup', {
+        bubbles: true, cancelable: true, key: 'Enter', code: 'Enter', keyCode: 13,
+      }));
+
+      setTimeout(() => {
+        const sendBtn2 = findSendButton();
+        if (sendBtn2) sendBtn2.click();
+      }, 500);
+    }, 600);
+  }, 200);
 }
 
 function waitAndInject(text) {

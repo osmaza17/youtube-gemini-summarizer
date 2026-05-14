@@ -1,112 +1,118 @@
 # YouTube Gemini Summarizer
 
-Extensión de Chrome que añade un botón **"Resumen"** en cualquier vídeo de YouTube. Al hacer clic, abre Gemini automáticamente con un prompt listo para generar un resumen detallado y estructurado del vídeo, sin necesidad de verlo.
+A Chrome extension that adds a **"Resumen"** button to any YouTube video. One click opens Gemini with a structured prompt ready to generate a detailed summary of the video — no need to watch it.
 
 ---
 
-## Características
+## Features
 
-- **Botón "Resumen" en el reproductor** — aparece junto a los botones de like/dislike de cualquier vídeo.
-- **Botón hover en miniaturas** — al pasar el ratón sobre cualquier miniatura de YouTube aparece un pequeño icono de Gemini en la esquina superior izquierda para resumir ese vídeo sin necesidad de abrirlo.
-- **Prompt estructurado en español** — el texto enviado a Gemini pide un resumen por secciones cronológicas, sin bullet points ni timestamps, con el nivel de detalle del vídeo original.
-- **Sin API key** — utiliza directamente la interfaz web de Gemini (gemini.google.com), por lo que no requiere ninguna clave de API ni cuenta de pago.
-- **Soporte para navegación SPA** — funciona con la navegación dinámica de YouTube sin necesidad de recargar la página.
+- **"Resumen" button on the player** — appears next to the like/dislike buttons on any video page.
+- **Hover button on thumbnails** — hovering over any YouTube thumbnail reveals a small Gemini icon in the top-left corner to summarize that video without opening it.
+- **Customizable prompt** — click the extension icon in Chrome to edit the prompt sent to Gemini. A default is provided and can be restored at any time.
+- **No API key required** — uses the Gemini web interface (gemini.google.com) directly; no paid account needed.
+- **SPA navigation support** — works with YouTube's dynamic navigation without requiring a page reload.
 
 ---
 
-## Cómo funciona
+## How it works
 
-1. En YouTube, el script `content_youtube.js` inyecta el botón "Resumen" debajo del vídeo y botones flotantes sobre las miniaturas.
-2. Al hacer clic, el `background.js` abre una nueva pestaña de Gemini con una clave única almacenada en `chrome.storage.local`.
-3. El script `content_gemini.js` lee esa clave, recupera el prompt y lo escribe automáticamente en el editor de Gemini, enviándolo sin intervención del usuario.
+1. On YouTube, `content_youtube.js` injects the "Resumen" button below the video and hover buttons over thumbnails.
+2. On click, `background.js` stores the prompt in `chrome.storage.local` under a unique key and opens a new Gemini tab passing that key in the URL hash.
+3. `content_gemini.js` reads the key from the hash, retrieves the prompt, types it into Gemini's editor, and sends it automatically.
 
 ```
 YouTube (content_youtube.js)
-    │  clic en "Resumen"
+    │  click "Resumen"
     ▼
-background.js  ──►  chrome.storage.local  ──►  abre gemini.google.com/#gemini_KEY
-                                                        │
-                                              content_gemini.js
-                                                        │
-                                              escribe prompt + envía
+background.js  ──►  chrome.storage.local  ──►  opens gemini.google.com/#gemini_KEY
+                                                          │
+                                                content_gemini.js
+                                                          │
+                                                types prompt + sends
 ```
 
 ---
 
-## Instalación
+## Installation
 
-La extensión **no está publicada en la Chrome Web Store**, por lo que hay que instalarla en modo desarrollador. Sigue estos pasos:
+The extension is **not published on the Chrome Web Store**, so it must be loaded in developer mode. Follow these steps:
 
-> ⚠️ **Importante — guarda la carpeta en una ubicación permanente**
+> ⚠️ **Keep the folder in a permanent location**
 >
-> Chrome carga la extensión desde la carpeta que seleccionas en el momento de instalarla. Si esa carpeta se mueve, se renombra o se elimina (por ejemplo, si la dejaste en Descargas y Windows la borró), Chrome perderá la extensión la próxima vez que se reinicie y tendrás que volver a instalarla. Elige un directorio fijo donde la carpeta vaya a quedarse siempre (por ejemplo `C:\Users\TuUsuario\AppData\Roaming\chrome-extensions-local\youtube-gemini-summarizer`) y no la muevas después de instalarla.
+> Chrome loads the extension from whichever folder you select at install time. If that folder is moved, renamed, or deleted (for example, if you left it in Downloads and it got cleared), Chrome will lose the extension the next time it restarts and you will have to reinstall it. Choose a fixed directory that the folder will always stay in (e.g. `C:\Users\YourUser\AppData\Roaming\chrome-extensions-local\youtube-gemini-summarizer`) and never move it after installing.
 
-### Paso 1 — Descarga los archivos
+### Step 1 — Download the files
 
-Clona el repositorio o descárgalo como ZIP:
+Clone the repository or download it as a ZIP:
 
 ```bash
 git clone https://github.com/osmaza17/youtube-gemini-summarizer.git
 ```
 
-O haz clic en **Code → Download ZIP** en la página del repositorio y descomprímelo en una carpeta de tu elección.
+Or click **Code → Download ZIP** on the repository page and extract it to your chosen permanent folder.
 
-### Paso 2 — Abre la página de extensiones de Chrome
+### Step 2 — Open Chrome's Extensions page
 
-1. Abre Google Chrome.
-2. En la barra de direcciones escribe:
+1. Open Google Chrome.
+2. Type the following in the address bar and press **Enter**:
 
    ```
    chrome://extensions
    ```
 
-3. Pulsa **Enter**.
+### Step 3 — Enable Developer Mode
 
-### Paso 3 — Activa el modo desarrollador
+Toggle the **Developer mode** switch in the top-right corner of the Extensions page.
 
-En la esquina superior derecha de la página de extensiones, activa el interruptor **"Modo de desarrollador"** (Developer mode).
+### Step 4 — Load the extension
 
-![Modo desarrollador](https://i.imgur.com/placeholder.png)
+1. Click the **Load unpacked** button that appears in the top-left corner.
+2. Select the folder that contains the extension files (the one with `manifest.json` inside).
+3. Click **Select Folder**.
 
-### Paso 4 — Carga la extensión
+### Step 5 — Verify the installation
 
-1. Haz clic en el botón **"Cargar descomprimida"** (Load unpacked) que aparece en la esquina superior izquierda.
-2. Selecciona la carpeta que contiene los archivos de la extensión (la que tiene el `manifest.json`).
-3. Haz clic en **"Seleccionar carpeta"**.
+**"Resumir con Gemini"** will appear in the list with its icon. Make sure the toggle is enabled (blue).
 
-### Paso 5 — Verifica la instalación
+### Step 6 — Try it out
 
-La extensión **"Resumir con Gemini"** aparecerá en la lista con su icono. Asegúrate de que está activada (interruptor en azul).
+1. Open any video on [youtube.com](https://www.youtube.com).
+2. Wait for the video page to load.
+3. The **"Resumen"** button with the Gemini icon will appear next to the like/dislike controls.
+4. Click it — a new Gemini tab will open and the prompt will be sent automatically.
 
-### Paso 6 — Prueba la extensión
-
-1. Abre cualquier vídeo en [youtube.com](https://www.youtube.com).
-2. Espera a que cargue la página del vídeo.
-3. Junto a los botones de like/dislike verás el botón **"Resumen"** con el icono de Gemini.
-4. Haz clic — se abrirá una nueva pestaña de Gemini y el prompt se enviará automáticamente.
-
-> **Nota:** Debes estar conectado a tu cuenta de Google en gemini.google.com para que el prompt se envíe correctamente.
+> **Note:** You must be signed into your Google account on gemini.google.com for the prompt to be submitted correctly.
 
 ---
 
-## Requisitos
+## Customizing the prompt
 
-| Requisito | Detalle |
-|-----------|---------|
-| Navegador | Google Chrome (o cualquier navegador basado en Chromium: Edge, Brave, Arc…) |
-| Cuenta Google | Necesaria para usar Gemini |
-| API key | No requerida |
+Click the extension icon in the Chrome toolbar to open the prompt editor. You can freely edit the text that gets sent to Gemini. The placeholder `(detalles del video)` is automatically replaced with the video title, channel, and URL — make sure to keep it somewhere in your prompt.
+
+Click **Save** to apply your changes, or **Reset to default** to restore the original prompt.
 
 ---
 
-## Estructura del proyecto
+## Requirements
+
+| Requirement | Details |
+|-------------|---------|
+| Browser | Google Chrome or any Chromium-based browser (Edge, Brave, Arc…) |
+| Google account | Required to use Gemini |
+| API key | Not required |
+
+---
+
+## Project structure
 
 ```
 youtube-gemini-summarizer/
-├── manifest.json          # Configuración de la extensión (Manifest V3)
-├── background.js          # Service worker: gestiona mensajes y abre pestañas
-├── content_youtube.js     # Script inyectado en YouTube: botones e interacción
-├── content_gemini.js      # Script inyectado en Gemini: escribe y envía el prompt
+├── manifest.json          # Extension config (Manifest V3)
+├── background.js          # Service worker: handles messages and opens tabs
+├── content_youtube.js     # Injected into YouTube: buttons and interaction
+├── content_gemini.js      # Injected into Gemini: types and sends the prompt
+├── popup.html             # Prompt editor UI (extension icon click)
+├── popup.js               # Prompt editor logic
 └── icons/
     ├── icon16.png
     ├── icon48.png
@@ -115,22 +121,16 @@ youtube-gemini-summarizer/
 
 ---
 
-## Solución de problemas
+## Troubleshooting
 
-**El botón "Resumen" no aparece**
-- Espera unos segundos después de que cargue el vídeo; la extensión hace polling durante 30 segundos.
-- Recarga la página con `F5`.
-- Asegúrate de que la extensión está activada en `chrome://extensions`.
+**The "Resumen" button does not appear**
+- Wait a few seconds after the video page loads; the extension polls for up to 30 seconds.
+- Reload the page with `F5`.
+- Make sure the extension is enabled in `chrome://extensions`.
 
-**Gemini no recibe el texto**
-- Verifica que estás conectado a tu cuenta de Google en gemini.google.com.
-- Si Gemini muestra un captcha o pantalla de bienvenida, complétala manualmente y vuelve a hacer clic en "Resumen".
+**Gemini does not receive the text**
+- Make sure you are signed into your Google account on gemini.google.com.
+- If Gemini shows a welcome screen or CAPTCHA, complete it manually and click "Resumen" again.
 
-**El prompt se envía en inglés o con formato incorrecto**
-- Esto puede deberse a que Gemini cambió su interfaz. Abre un issue en el repositorio con una captura de pantalla.
-
----
-
-## Licencia
-
-MIT — úsalo, modifícalo y distribúyelo libremente.
+**The prompt is sent with incorrect formatting**
+- Gemini may have updated its interface. Open an issue in the repository with a screenshot.

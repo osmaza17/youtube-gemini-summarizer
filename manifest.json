@@ -38,6 +38,7 @@
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     },
-    "default_title": "Resumir con Gemini"
+    "default_title": "Resumir con Gemini",
+    "default_popup": "popup.html"
   }
 }
